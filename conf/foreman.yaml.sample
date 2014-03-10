@@ -1,0 +1,7 @@
+---
+:base_url: https://127.0.0.1
+:oauth:
+  :consumer_key:  <your consumer key>
+  :consumer_secret: <your consumer secret>
+:headers:
+  :foreman_user: <foreman user>

@@ -1,0 +1,53 @@
+#!/usr/bin/env ruby
+#
+# Foreman_Provision script
+#
+# @author: Nils Domrose
+#
+$LOAD_PATH.unshift File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
+require 'foreman_provision'
+require 'optparse'
+require 'logger'
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: foreman-provision -c conf/config.yaml -a conf/foreman.yaml -v -d"
+  opts.on("-c", "--config_file FILE", "location of the configuration file") do |config_file|
+    options[:config_file] = config_file
+  end
+  opts.on("-a", "--auth_credentials FILE", "location of the foreman auth credentials YAML file") do |credentials|
+    options[:credentials] = credentials
+  end
+  opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
+    options[:verbose] = v
+  end
+  opts.on("-l", "--log_file FILE", "location of the log file") do |log_file|
+    options[:log_file] = log_file
+  end
+  opts.on("-d", "--[no-]debug", "Run in debug mode") do |d|
+    options[:debug] = d
+  end
+end.parse!
+
+
+if options.fetch(:debug, false)
+  loglevel = Logger::DEBUG
+elsif options.fetch(:verbose, false)
+  loglevel = Logger::INFO
+else
+  loglevel = Logger::FATAL
+end
+
+
+begin
+  logger = Foreman_Provision::Configuration.instance.set_logger(options.fetch(:log_file, false), loglevel)
+  credentials = Foreman_Provision::Configuration.instance.load_credentials(options.fetch(:credentials, './conf/foreman.yaml'))
+  config = Foreman_Provision::Configuration.instance.load_config(options.fetch(:config_file, './conf/config.yaml'))
+  provisioner = Foreman_Provision::Provision.new(credentials, logger)
+  provisioner.run(config)
+rescue => e
+  msg = "Error while processing provisoning: \"#{e.inspect}\"!"
+  logger.error(msg) if logger
+  abort (msg)
+end
+
