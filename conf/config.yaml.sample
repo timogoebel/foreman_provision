@@ -1,6 +1,6 @@
 ---
 :hosts:
-  - :name: ubuntuhost.domain
+  - :name: test10.local.venv.de
     :hostgroup: 'generic kvm hosts'
     :compute_resource: 'kvm_local'
     :architecture: 'x86_64'
@@ -26,28 +26,50 @@
           :format_type: raw
     :puppetclasses:
       - stdlib
-  - :name: centoshost.domain
-    :hostgroup: 'generic kvm hosts'
-    :compute_resource: 'kvm_local'
+    :location: local
+:subnets:
+  - :name: test
+    :network: 10.1.1.0
+    :mask: 255.255.255.0
+    :gateway: 10.1.1.1
+    :from: 10.1.1.100
+    :to: 10.1.1.150
+    :dns_primary: 10.1.1.10
+    :dns_secondary: 10.1.1.11
+    :dhcp_proxy: foreman.local.venv.de
+    :tftp_proxy: foreman.local.venv.de
+    :dns_proxy: foreman.local.venv.de
+    :vlanid: ''
+    :domain_names:
+      - local.venv.de
+    :locations:
+      - local
+:domains:
+  - :name: local2.venv.de
+    :dns_proxy: foreman.local.venv.de
+    :fullname: 'My second local network'
+    :locations:
+      - local
+:proxies:
+  - :name: foo2.local
+    :url: https://foo2.local.venv.de:8443
+    :locations:
+      - local
+:params:
+  - :name: sample_param
+    :value: some_value
+:hostgroups:
+  - :name: myhosts
     :architecture: 'x86_64'
-    :operatingsystem: 'CentOS 6.5'
-    :ptable: 'Kickstart default'
-    :medium: 'CentOS mirror (Cached)'
+    :operatingsystem: 'ubuntu 12.04'
+    :ptable: 'Preseed default'
     :environment: 'production'
-    :build: 1
-    :compute_attributes:
-      :cpus: 1
-      :start: "1"
-      :power_action: start
-      :memory: 805306368
+    :puppetclasses:
+      - stdlib
+    :subnet: 'local kvm subnet'
+    :domain: 'local.venv.de'
+    :puppet_proxy: foreman.local.venv.de
+    :puppet_ca_proxy: foreman.local.venv.de
+    :locations:
+      - local
 
-      :nics_attributes:
-        0:
-          :type: :bridge
-          :bridge: virbr0
-          :model: virtio
-      :volumes_attributes:
-        0:
-          :pool_name: virtimages
-          :capacity: 5G
-          :allocation: 0G
