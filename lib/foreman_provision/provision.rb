@@ -105,6 +105,7 @@ module Foreman_Provision
       computeresource = ForemanApi::Resources::ComputeResource.new(
         @credentials
       )
+      puts computeresource.index()
       res = computeresource.index()[0]['results'].select{|entry| entry["name"]==name }
       res[0]['id'] if res.any?
     end
@@ -628,6 +629,8 @@ module Foreman_Provision
         host[:environment_id] = get_environment_id_by_name(host.delete(:environment)) if host.fetch(:environment, false)
         host[:ptable_id] = get_ptable_id_by_name(host.delete(:ptable)) if host.fetch(:ptable, false)
         host[:medium_id] = get_medium_id_by_name(host.delete(:medium)) if host.fetch(:medium, false)
+        host[:domain_id] = get_domain_id_by_name(host.delete(:domain)) if host.fetch(:domain, false)
+        host[:subnet_id] = get_subnet_id_by_name(host.delete(:subnet)) if host.fetch(:subnet, false)
         host[:location_id] = get_location_id_by_name(host.delete(:location)) if host.fetch(:location, false)
         host[:puppetclass_ids] = resolve_puppetclass_names(host.delete(:puppetclasses)) if host.fetch(:puppetclasses, false)
 
