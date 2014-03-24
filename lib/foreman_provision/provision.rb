@@ -105,7 +105,6 @@ module Foreman_Provision
       computeresource = ForemanApi::Resources::ComputeResource.new(
         @credentials
       )
-      puts computeresource.index()
       res = computeresource.index()[0]['results'].select{|entry| entry["name"]==name }
       res[0]['id'] if res.any?
     end
