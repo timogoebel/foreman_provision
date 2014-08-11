@@ -34,7 +34,7 @@ module Foreman_Provision
     #
     def get_os_id_by_name(name)
       os = ForemanApi::Resources::OperatingSystem.new(
-        @credentials
+        @credentials, @credentials[:options]
       )
       res = os.index({:search => "name=#{name.split[0]}"})[0]['results'].select{|entry| entry["fullname"]==name }
       res[0]['id'] if res.any?
@@ -51,7 +51,7 @@ module Foreman_Provision
     #
     def get_hostgroup_id_by_name(name)
       hostgroup = ForemanApi::Resources::Hostgroup.new(
-        @credentials
+        @credentials, @credentials[:options]
       )
       res = hostgroup.index({:search => "name=" + '"' + name + '"'})[0]['results'].select{|entry| entry["name"]==name }
       res[0]['id'] if res.any?
@@ -68,7 +68,7 @@ module Foreman_Provision
     #
     def get_host_id_by_name(name)
       host = ForemanApi::Resources::Host.new(
-        @credentials
+        @credentials, @credentials[:options]
       )
       res = host.index({:search => "name=#{name}"})[0]['results'].select{|entry| entry["name"]==name }
       res[0]['id'] if res.any?
@@ -85,7 +85,7 @@ module Foreman_Provision
     #
     def get_puppetclass_id_by_name(name)
       puppetclass = ForemanApi::Resources::Puppetclass.new(
-        @credentials
+        @credentials, @credentials[:options]
       )
       results = puppetclass.index({:search => "name=#{name}"})[0]['results']
       results.key?(name) ? res = results[name].select{|entry| entry["name"]==name } : res = {}
@@ -103,7 +103,7 @@ module Foreman_Provision
     #
     def get_computeresource_id_by_name(name)
       computeresource = ForemanApi::Resources::ComputeResource.new(
-        @credentials
+        @credentials, @credentials[:options]
       )
       res = computeresource.index()[0]['results'].select{|entry| entry["name"]==name }
       res[0]['id'] if res.any?
@@ -134,7 +134,7 @@ module Foreman_Provision
     #
     def get_architecture_id_by_name(name)
       architecture = ForemanApi::Resources::Architecture.new(
-        @credentials
+        @credentials, @credentials[:options]
       )
       res = architecture.index()[0]['results'].select{|entry| entry["name"]==name }
       res[0]['id'] if res.any?
@@ -151,7 +151,7 @@ module Foreman_Provision
     #
     def get_environment_id_by_name(name)
       environment = ForemanApi::Resources::Environment.new(
-        @credentials
+        @credentials, @credentials[:options]
       )
       res = environment.index()[0]['results'].select{|entry| entry["name"]==name }
       res[0]['id'] if res.any?
@@ -168,7 +168,7 @@ module Foreman_Provision
     #
     def get_ptable_id_by_name(name)
       ptable = ForemanApi::Resources::Ptable.new(
-        @credentials
+        @credentials, @credentials[:options]
       )
       res = ptable.index()[0]['results'].select{|entry| entry["name"]==name }
       res[0]['id'] if res.any?
@@ -185,7 +185,7 @@ module Foreman_Provision
     #
     def get_medium_id_by_name(name)
       medium = ForemanApi::Resources::Medium.new(
-        @credentials
+        @credentials, @credentials[:options]
       )
       res = medium.index()[0]['results'].select{|entry| entry["name"]==name }
       res[0]['id'] if res.any?
@@ -202,7 +202,7 @@ module Foreman_Provision
     #
     def get_subnet_id_by_name(name)
       subnet = ForemanApi::Resources::Subnet.new(
-          @credentials
+        @credentials, @credentials[:options]
       )
       res = subnet.index()[0]['results'].select{|entry| entry["name"]==name }
       res[0]['id'] if res.any?
@@ -219,7 +219,7 @@ module Foreman_Provision
     #
     def get_proxy_id_by_name(name)
       proxy = ForemanApi::Resources::SmartProxy.new(
-          @credentials
+        @credentials, @credentials[:options]
       )
       res = proxy.index()[0]['results'].select{|entry| entry["name"]==name }
       res[0]['id'] if res.any?
@@ -236,7 +236,7 @@ module Foreman_Provision
     #
     def get_domain_id_by_name(name)
       domain = ForemanApi::Resources::Domain.new(
-          @credentials
+        @credentials, @credentials[:options]
       )
       res = domain.index()[0]['results'].select{|entry| entry["name"]==name }
       res[0]['id'] if res.any?
@@ -253,7 +253,7 @@ module Foreman_Provision
     #
     def get_param_id_by_name(name)
       param = ForemanApi::Resources::CommonParameter.new(
-          @credentials
+        @credentials, @credentials[:options]
       )
       res = param.index()[0]['results'].select{|entry| entry["name"]==name }
       res[0]['id'] if res.any?
@@ -270,7 +270,7 @@ module Foreman_Provision
     #
     def get_org_id_by_name(name)
       org = ForemanApi::Resources::Organization.new(
-          @credentials
+        @credentials, @credentials[:options]
       )
       res = org.index()[0]['results'].select{|entry| entry["name"]==name }
       res[0]['id'] if res.any?
@@ -287,7 +287,7 @@ module Foreman_Provision
     #
     def get_location_id_by_name(name)
       location = ForemanApi::Resources::Location.new(
-          @credentials
+        @credentials, @credentials[:options]
       )
       res = location.index()[0]['results'].select{|entry| entry["name"]==name }
       res[0]['id'] if res.any?
@@ -449,7 +449,7 @@ module Foreman_Provision
     #
     def create_host(hostdata)
       host = ForemanApi::Resources::Host.new(
-          @credentials
+        @credentials, @credentials[:options]
       )
       host.create({:host => hostdata})
       puts "Created Host \"#{hostdata[:name]}\" in foreman"
@@ -466,7 +466,7 @@ module Foreman_Provision
     #
     def create_hostgroup(hostgroupdata)
       hostgroup = ForemanApi::Resources::Hostgroup.new(
-          @credentials
+        @credentials, @credentials[:options]
       )
       hostgroup.create({:hostgroup => hostgroupdata})
       puts "Created Hostgroup \"#{hostgroupdata[:name]}\" in foreman"
@@ -483,7 +483,7 @@ module Foreman_Provision
     #
     def create_subnet(subnetdata)
       subnet = ForemanApi::Resources::Subnet.new(
-          @credentials
+        @credentials, @credentials[:options]
       )
       subnet.create({:subnet => subnetdata})
       puts "Created Subnet \"#{subnetdata[:name]}\" in foreman"
@@ -500,7 +500,7 @@ module Foreman_Provision
     #
     def create_proxy(proxydata)
       proxy = ForemanApi::Resources::SmartProxy.new(
-          @credentials
+        @credentials, @credentials[:options]
       )
       proxy.create({:smart_proxy => proxydata})
       puts "Created Smart-Proxy \"#{proxydata[:name]}\" in foreman"
@@ -517,7 +517,7 @@ module Foreman_Provision
     #
     def create_domain(domaindata)
       domain = ForemanApi::Resources::Domain.new(
-          @credentials
+        @credentials, @credentials[:options]
       )
       domain.create({:domain => domaindata})
       puts "Created Domain \"#{domaindata[:name]}\" in foreman"
@@ -534,7 +534,7 @@ module Foreman_Provision
     #
     def create_param(paramdata)
       param = ForemanApi::Resources::CommonParameter.new(
-          @credentials
+        @credentials, @credentials[:options]
       )
       param.create({:common_parameter => paramdata})
       puts "Created Parameter \"#{paramdata[:name]}\" in foreman"
