@@ -5,3 +5,5 @@
   :consumer_secret: <your consumer secret>
 :headers:
   :foreman_user: <foreman user>
+:options:
+  :verify_ssl: 0
