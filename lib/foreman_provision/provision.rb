@@ -636,11 +636,20 @@ module Foreman_Provision
         if host.fetch(:name, false)
           # work around for non period (non fqdn hostnames in foreman >1.4)
           if host.fetch(:name, '').include? '.'
-            is_host(host[:name]) ? (puts "Skipping - Host \"#{host[:name]}\" already exists!") : create_host(host)
+            if is_host(host[:name])
+	      puts "Skipping - Host \"#{host[:name]}\" already exists!"
+	    else
+              host.delete(:domain) if host.fetch(:domain, false)
+	      create_host(host)
+	    end
           else
-            is_host("#{host[:name]}.#{host[:domain]}") ? (puts "Skipping - Host \"#{host[:name]}.#{host[:domain]}\" already exists!") : create_host(host)
+            if is_host("#{host[:name]}.#{host[:domain]}")
+	      puts "Skipping - Host \"#{host[:name]}.#{host[:domain]}\" already exists!"
+	    else
+              host.delete(:domain) if host.fetch(:domain, false)
+	      create_host(host)
+	    end
           end
-          host.delete(:domain) if host.fetch(:domain, false)
         end
       end if config.fetch(:hosts, false)
     end
