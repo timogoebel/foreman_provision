@@ -20,7 +20,6 @@ module Foreman_Provision
     def initialize(credentials, logger)
       @credentials = credentials
       @logger = logger
-
     end
 
     # Method to get operatingsystem id from operatingsystem name
@@ -45,7 +44,7 @@ module Foreman_Provision
     # * *Example* :
     #  id = get_hostgroup_id_by_name('my_hosts')
     # * *Args*    :
-    #   - +name+ -> +String+ Hostgroup Name
+    #   - +name+ -> +String+ Hostgroup Name or Title
     # * *Returns* :
     #   - +Integer+ hostgroup id
     #
@@ -53,7 +52,7 @@ module Foreman_Provision
       hostgroup = ForemanApi::Resources::Hostgroup.new(
         @credentials, @credentials[:options]
       )
-      res = hostgroup.index({:search => "name=" + '"' + name + '"'})[0]['results'].select{|entry| entry["name"]==name }
+      res = hostgroup.index({:search => "title~" + '"' + name + '"'})[0]['results'].select{|entry| entry["title"]==name }
       res[0]['id'] if res.any?
     end
 
@@ -242,20 +241,45 @@ module Foreman_Provision
       res[0]['id'] if res.any?
     end
 
-    # Method to get param id from param name
+    # Method to get commonparam id from common param name
     #
     # * *Example* :
-    #  id = get_param_id_by_name('sample_param')
+    #  id = get_cparam_id_by_name('sample_cparam')
+    # * *Args*    :
+    #   - +name+ -> +String+ cparam
+    # * *Returns* :
+    #   - +Integer+ cparam id
+    #
+    def get_cparam_id_by_name(name)
+      domain = ForemanApi::Resources::CommonParameter.new(
+        @credentials, @credentials[:options]
+      )
+      res = domain.index()[0]['results'].select{|entry| entry["name"]==name }
+      res[0]['id'] if res.any?
+    end
+
+    # Method to get param id from paramdata
+    #
+    # * *Example* :
+    #  id = get_param_id_by_paramdata(paramdata)
     # * *Args*    :
     #   - +name+ -> +String+ param Name
     # * *Returns* :
     #   - +Integer+ param id
     #
-    def get_param_id_by_name(name)
-      param = ForemanApi::Resources::CommonParameter.new(
+    def get_param_id_by_paramdata(paramdata)
+      param = ForemanApi::Resources::Parameter.new(
         @credentials, @credentials[:options]
       )
-      res = param.index()[0]['results'].select{|entry| entry["name"]==name }
+      if paramdata.fetch('domain_id', false)
+        res = param.index({'domain_id' => paramdata['domain_id']})[0]['results'].select{|entry| entry["name"]==paramdata[:parameter][:name] }
+      end
+      if paramdata.fetch('hostgroup_id', false)
+        res = param.index({'hostgroup_id' => paramdata['hostgroup_id']})[0]['results'].select{|entry| entry["name"]==paramdata[:parameter][:name] }
+      end
+      if paramdata.fetch('host_id', false)
+        res = param.index({'host_id' => paramdata['host_id']})[0]['results'].select{|entry| entry["name"]==paramdata[:parameter][:name] }
+      end
       res[0]['id'] if res.any?
     end
 
@@ -345,17 +369,30 @@ module Foreman_Provision
       get_domain_id_by_name(name)
     end
 
+    # Method to validate if common param exist
+    #
+    # * *Example* :
+    #  id = is_cparam('sample_cparam')
+    # * *Args*    :
+    #   - +name+ -> +String+ cparam Name
+    # * *Returns* :
+    #   - +Boolean+ returns true if cparam exists in foreman
+    #
+    def is_cparam(name)
+      get_cparam_id_by_name(name)
+    end
+
     # Method to validate if a parameter exist
     #
     # * *Example* :
-    #  id = is_param('sample_param')
+    #  id = is_param(paramdata)
     # * *Args*    :
-    #   - +name+ -> +String+ parameter Name
+    #   - +paramdata+ -> +Hash+ parameter Name
     # * *Returns* :
     #   - +Boolean+ returns true if parameter exists in foreman
     #
-    def is_param(name)
-      get_param_id_by_name(name)
+    def is_param(paramdata)
+      get_param_id_by_paramdata(paramdata)
     end
 
     # Method to validate if an organization exist
@@ -438,6 +475,24 @@ module Foreman_Provision
       return res
     end
 
+    # Method to resolve array of organization names to array of ids
+    #
+    # * *Example* :
+    #  org_ids = resolve_org_names(orgnames)
+    # * *Args*    :
+    #   - +orgnames+ -> +Array+ of organization names
+    # * *Returns* :
+    #   - +Array+ of organization ids
+    #
+    def resolve_org_names(orgnames)
+      raise TypeError unless orgnames.is_a? Array
+      res = []
+      orgnames.each do |orgname|
+        res.push(get_org_id_by_name(orgname))
+      end
+      return res
+    end
+
     # Method to create a Host in foreman
     #
     # * *Example* :
@@ -451,8 +506,17 @@ module Foreman_Provision
       host = ForemanApi::Resources::Host.new(
         @credentials, @credentials[:options]
       )
+      if hostdata.fetch(:domain, false)
+        domain = hostdata[:domain]
+        hostdata.delete(:domain)
+      end
       host.create({:host => hostdata})
-      puts "Created Host \"#{hostdata[:name]}\" in foreman"
+
+      if hostdata.fetch(:name, '').include? '.'
+        puts "Created Host \"#{hostdata[:name]}\" in foreman"
+      else
+        puts "Created Host \"#{hostdata[:name]}.#{domain}\" in foreman"
+      end
     end
 
     # Method to create a HostGroup in foreman
@@ -523,6 +587,23 @@ module Foreman_Provision
       puts "Created Domain \"#{domaindata[:name]}\" in foreman"
     end
 
+    # Method to create a cparam in foreman
+    #
+    # * *Example* :
+    #  create_cparam(cparamdata)
+    # * *Args*    :
+    #   - +cparamdata+ -> +Hash+ containing the cparam configuration data
+    # * *Returns* :
+    #   - +Boolean+ true if cparam created successfully
+    #
+    def create_cparam(cparamdata)
+      domain = ForemanApi::Resources::CommonParameter.new(
+        @credentials, @credentials[:options]
+      )
+      domain.create({:common_parameter => cparamdata})
+      puts "Created Common Parameter \"#{cparamdata[:name]}\" in foreman"
+    end
+
     # Method to create a parameter  in foreman
     #
     # * *Example* :
@@ -533,11 +614,12 @@ module Foreman_Provision
     #   - +Boolean+ true if parameter created successfully
     #
     def create_param(paramdata)
-      param = ForemanApi::Resources::CommonParameter.new(
+      hostgroup = paramdata.delete(:hostgroup) if paramdata['hostgroup_id']
+      param = ForemanApi::Resources::Parameter.new(
         @credentials, @credentials[:options]
       )
-      param.create({:common_parameter => paramdata})
-      puts "Created Parameter \"#{paramdata[:name]}\" in foreman"
+      param.create(paramdata)
+      puts "Created Parameter using data \"#{paramdata}\" in foreman"
     end
 
     # Method to create a set of Objects in foreman
@@ -551,36 +633,28 @@ module Foreman_Provision
     #
     def run(config)
 
-      config.fetch(:params, []).each do |param|
-        @logger.debug("creating global Parameter using data \"#{param}\"")
-        if param.fetch(:name, false)
-          is_param(param[:name]) ? (puts "Skipping - global Parameter \"#{param[:name]}\" already exists!") : create_param(param)
-        end
-      end if config.fetch(:params, false)
-
       config.fetch(:proxies, []).each do |proxy|
-        # TODO: implement organizations
         # TODO: validate / implement param support
         @logger.debug("creating Smart-Proxy using data \"#{proxy}\"")
         proxy[:location_ids] = resolve_location_names(proxy.delete(:locations)) if proxy.fetch(:locations, false)
+        proxy[:organization_ids] = resolve_org_names(proxy.delete(:organizations)) if proxy.fetch(:organizations, false)
         if proxy.fetch(:name, false)
           is_proxy(proxy[:name]) ? (puts "Skipping - Smart-Proxy \"#{proxy[:name]}\" already exists!") : create_proxy(proxy)
         end
       end if config.fetch(:proxies, false)
 
       config.fetch(:domains, []).each do |domain|
-        # TODO: implement organizations
         # TODO: validate / implement param support
         @logger.debug("creating Domain using data \"#{domain}\"")
         domain[:dns_id] = get_proxy_id_by_name(domain.delete(:dns_proxy)) if domain.fetch(:dns_proxy, false)
         domain[:location_ids] = resolve_location_names(domain.delete(:locations)) if domain.fetch(:locations, false)
+        domain[:organization_ids] = resolve_org_names(domain.delete(:organizations)) if domain.fetch(:organizations, false)
         if domain.fetch(:name, false)
           is_domain(domain[:name]) ? (puts "Skipping - Domain \"#{domain[:name]}\" already exists!") : create_domain(domain)
         end
       end if config.fetch(:domains, false)
 
       config.fetch(:subnets, []).each do |subnet|
-        # TODO: implement organizations
         # TODO: validate / implement param support
         @logger.debug("creating Subnet using data \"#{subnet}\"")
         subnet[:dns_id] = get_proxy_id_by_name(subnet.delete(:dns_proxy)) if subnet.fetch(:dns_proxy, false)
@@ -588,6 +662,7 @@ module Foreman_Provision
         subnet[:tftp_id] = get_proxy_id_by_name(subnet.delete(:tftp_proxy)) if subnet.fetch(:tftp_proxy, false)
         subnet[:domain_ids] = resolve_domain_names(subnet.delete(:domain_names)) if subnet.fetch(:domain_names, false)
         subnet[:location_ids] = resolve_location_names(subnet.delete(:locations)) if subnet.fetch(:locations, false)
+        subnet[:organization_ids] = resolve_org_names(subnet.delete(:organizations)) if subnet.fetch(:organizations, false)
 
         if subnet.fetch(:name, false)
           is_subnet(subnet[:name]) ? (puts "Skipping - Subnet \"#{subnet[:name]}\" already exists!") : create_subnet(subnet)
@@ -595,7 +670,6 @@ module Foreman_Provision
       end if config.fetch(:subnets, false)
 
       config.fetch(:hostgroups, []).each do |hostgroup|
-        # TODO: implement organizations
         # TODO: validate / implement param support
         @logger.debug("creating Hostgroup using data \"#{hostgroup}\"")
         hostgroup[:parent_id] = get_hostgroup_id_by_name(hostgroup.delete(:parent)) if hostgroup.fetch(:parent, false)
@@ -610,6 +684,7 @@ module Foreman_Provision
         hostgroup[:puppet_proxy_id] = get_proxy_id_by_name(hostgroup.delete(:puppet_proxy)) if hostgroup.fetch(:puppet_proxy, false)
         hostgroup[:puppetclass_ids] = resolve_puppetclass_names(hostgroup.delete(:puppetclasses)) if hostgroup.fetch(:puppetclasses, false)
         hostgroup[:location_ids] = resolve_location_names(hostgroup.delete(:locations)) if hostgroup.fetch(:locations, false)
+        hostgroup[:organization_ids] = resolve_org_names(hostgroup.delete(:organizations)) if hostgroup.fetch(:organizations, false)
 
 
         if hostgroup.fetch(:name, false)
@@ -618,7 +693,6 @@ module Foreman_Provision
       end if config.fetch(:hostgroups, false)
 
       config.fetch(:hosts, []).each do |host|
-        # TODO: implement organizations
         # TODO: validate / implement param support
         @logger.debug("creating Host using data \"#{host}\"")
         host[:hostgroup_id] = get_hostgroup_id_by_name(host.delete(:hostgroup)) if host.fetch(:hostgroup, false)
@@ -631,27 +705,56 @@ module Foreman_Provision
         host[:domain_id] = get_domain_id_by_name(host[:domain]) if host.fetch(:domain, false)
         host[:subnet_id] = get_subnet_id_by_name(host.delete(:subnet)) if host.fetch(:subnet, false)
         host[:location_id] = get_location_id_by_name(host.delete(:location)) if host.fetch(:location, false)
+        host[:organization_id] = get_org_id_by_name(host.delete(:organization)) if host.fetch(:organization, false)
         host[:puppetclass_ids] = resolve_puppetclass_names(host.delete(:puppetclasses)) if host.fetch(:puppetclasses, false)
 
         if host.fetch(:name, false)
           # work around for non period (non fqdn hostnames in foreman >1.4)
           if host.fetch(:name, '').include? '.'
             if is_host(host[:name])
-	      puts "Skipping - Host \"#{host[:name]}\" already exists!"
-	    else
-              host.delete(:domain) if host.fetch(:domain, false)
-	      create_host(host)
-	    end
+              puts "Skipping - Host \"#{host[:name]}\" already exists!"
+            else
+              create_host(host)
+            end
           else
             if is_host("#{host[:name]}.#{host[:domain]}")
-	      puts "Skipping - Host \"#{host[:name]}.#{host[:domain]}\" already exists!"
-	    else
-              host.delete(:domain) if host.fetch(:domain, false)
-	      create_host(host)
-	    end
+              puts "Skipping - Host \"#{host[:name]}.#{host[:domain]}\" already exists!"
+            else
+              create_host(host)
+            end
           end
         end
       end if config.fetch(:hosts, false)
+
+      config.fetch(:params, []).each do |param|
+        if param.fetch(:parameter, false)
+          if param[:parameter].fetch(:name, false)
+            if [param.fetch(:domain, false), param.fetch(:hostgroup, false), param.fetch(:host, false)].select { |e| e }.size == 1
+              @logger.debug("creating Parameter \"using data \"#{param}\"")
+              param['domain_id'] = get_domain_id_by_name(param[:domain]) if param.fetch(:domain, false)
+              param['hostgroup_id'] = get_hostgroup_id_by_name(param[:hostgroup]) if param.fetch(:hostgroup, false)
+              param['host_id'] = get_host_id_by_name(param[:host]) if param.fetch(:host, false)
+              param.delete(:domain) if param['domain_id']
+              param.delete(:hostgroup) if param['hostgroup_id']
+              param.delete(:host) if param['host_id']
+              is_param(param) ? (puts "Skipping - Parameter \"#{param[:parameter][:name]}\" already exists - Data: #{param}") : create_param(param)
+            elsif [param.fetch(:domain, false), param.fetch(:hostgroup, false), param.fetch(:host, false)].select { |e| e }.size > 1
+              puts "Multiple types set - You can only associate a parameter with domain or host or hostgroup at a time! Data: #{param}"
+            else
+              puts "No type set - You can only associate a parameter with domain or host or hostgroup resource types! Data: #{param}"
+            end
+          else
+            puts "No name set - you must set a name for a parameter! Data: #{param}"
+          end
+        end
+      end if config.fetch(:params, false)
+
+      config.fetch(:cparams, []).each do |cparam|
+        @logger.debug("creating Common (global) Parameter using data \"#{cparam}\"")
+        if cparam.fetch(:name, false)
+          is_cparam(cparam[:name]) ? (puts "Skipping - Common (global) Parameter \"#{cparam[:name]}\" already exists!") : create_cparam(cparam)
+        end
+      end if config.fetch(:cparams, false)
     end
   end
 end

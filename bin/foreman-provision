@@ -46,8 +46,8 @@ begin
   provisioner = Foreman_Provision::Provision.new(credentials, logger)
   provisioner.run(config)
 rescue => e
-  msg = "Error while processing provisoning: \"#{e.inspect}\"!"
-  logger.error(msg) if logger
-  abort (msg)
+   msg = "Error while processing provisoning: \"#{e.inspect}\"!"
+   logger.error(msg) if logger
+   abort (msg)
 end
 
