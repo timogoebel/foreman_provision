@@ -12,7 +12,7 @@ require 'logger'
 options = {}
 OptionParser.new do |opts|
   opts.banner = "Usage: foreman-provision -c conf/config.yaml -a conf/foreman.yaml -v -d"
-  opts.on("-c", "--config_file FILE", "location of the configuration file") do |config_file|
+  opts.on("-c", "--config_file FILE|DIR", "location of the configuration file or a directory containing *.YAML files") do |config_file|
     options[:config_file] = config_file
   end
   opts.on("-a", "--auth_credentials FILE", "location of the foreman auth credentials YAML file") do |credentials|
@@ -27,6 +27,9 @@ OptionParser.new do |opts|
   opts.on("-d", "--[no-]debug", "Run in debug mode") do |d|
     options[:debug] = d
   end
+  opts.on("-t", "--test", "Only show what whould have been executed in no-test mode") do |t|
+    options[:test] = t
+  end
 end.parse!
 
 
@@ -38,16 +41,23 @@ else
   loglevel = Logger::FATAL
 end
 
+if options.fetch(:test, false)
+  test = true
+end
+
 
 begin
   logger = Foreman_Provision::Configuration.instance.set_logger(options.fetch(:log_file, false), loglevel)
   credentials = Foreman_Provision::Configuration.instance.load_credentials(options.fetch(:credentials, './conf/foreman.yaml'))
   config = Foreman_Provision::Configuration.instance.load_config(options.fetch(:config_file, './conf/config.yaml'))
-  provisioner = Foreman_Provision::Provision.new(credentials, logger)
+  provisioner = Foreman_Provision::Provision.new(credentials, logger, test)
   provisioner.run(config)
 rescue => e
-   msg = "Error while processing provisoning: \"#{e.inspect}\"!"
-   logger.error(msg) if logger
-   abort (msg)
+  msg = "Error while processing provisoning: \"#{e.inspect}\"!"
+  if logger
+    logger.error(msg)
+    puts e.backtrace
+  end
+  abort (msg)
 end
 

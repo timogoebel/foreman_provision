@@ -1,0 +1,9 @@
+---
+:params:
+  - :name: Testsystems
+    :type: hostgroup
+    :params:
+      - :name: sample_param1
+        :value: some_value1
+      - :name: sample_param2
+        :value: some_value1

@@ -1,0 +1,31 @@
+---
+# vmware vsphere
+:hosts:
+  - :name: test11.local.venv.de
+    :hostgroup: 'vsphere'
+    :compute_resource: 'vsphere_local'
+    :architecture: 'x86_64'
+    :ptable: 'RedHat LVM'
+    :domain: local.venv.de
+    :subnet: 'local network'
+    :operatingsystem: 'RedHat 6.5'
+    :environment: 'production'
+    :build: 1
+    :compute_attributes:
+      :cpus: 1
+      :start: "1"
+      :cluster: 'ESX'
+      :path: '/Datencenter/TEST/prod' # from compute_resource edit screen view source
+      :memory_mb: 768
+      :interfaces_attributes:
+        0:
+          :network: 'dvportgroup-100404' # from compute_resource edit screen view source
+      :volumes_attributes:
+        0:
+          :datastore: MY_SAN
+          :name: 'Hard disk'
+          :size_gb: 5
+          :thin: true
+    :puppetclasses:
+      - stdlib
+    :location: LAN

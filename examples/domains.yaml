@@ -1,0 +1,7 @@
+---
+:domains:
+  - :name: local2.venv.de
+    :dns_proxy: foreman.local.venv.de
+    :fullname: 'My second local network'
+    :locations:
+      - local

@@ -1,0 +1,29 @@
+---
+# kvm libvirt host
+:hosts:
+  - :name: test10.local.venv.de
+    :hostgroup: 'generic kvm hosts'
+    :compute_resource: 'kvm_local'
+    :architecture: 'x86_64'
+    :operatingsystem: 'ubuntu 12.04'
+    :environment: 'production'
+    :build: 1
+    :compute_attributes:
+      :cpus: 1
+      :start: "1"
+      :power_action: start
+      :memory: 805306368
+      :nics_attributes:
+        0:
+          :type: :bridge
+          :bridge: virbr0
+          :model: virtio
+      :volumes_attributes:
+        0:
+          :pool_name: virtimages
+          :capacity: 5G
+          :allocation: 0G
+          :format_type: raw
+    :puppetclasses:
+      - stdlib
+    :location: local

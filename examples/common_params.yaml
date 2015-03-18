@@ -1,0 +1,4 @@
+---
+:common_params:
+  - :name: sample_global_param_foo
+    :value: sample value

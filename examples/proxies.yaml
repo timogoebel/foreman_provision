@@ -1,0 +1,6 @@
+---
+:proxies:
+  - :name: foo2.local
+    :url: https://foo2.local.venv.de:8443
+    :locations:
+      - local

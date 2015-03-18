@@ -6,8 +6,8 @@ require 'foreman_provision/version'
 Gem::Specification.new do |spec|
   spec.name          = 'foreman_provision'
   spec.version       = ForemanProvision::VERSION
-  spec.authors       = ['Nils Domrose']
-  spec.email         = ['nils.domrose@inovex.de']
+  spec.authors       = ['Nils Domrose', 'Arnold Bechtoldt']
+  spec.email         = ['nils.domrose@inovex.de', 'arnold.bechtoldt@inovex.de']
   spec.description   = 'Gem to provision hosts on theforeman'
   spec.summary       = 'This gem support provisioning of hosts using foremans REST API version 2'
   spec.homepage      = 'http://www.inovex.de'
