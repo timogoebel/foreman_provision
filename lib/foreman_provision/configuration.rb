@@ -3,7 +3,7 @@ require 'logger'
 require 'yaml'
 require 'singleton'
 
-module Foreman_Provision
+module ForemanProvision
   # Singleton Class to manage foreman-provision configuration data
   class Configuration
     include Singleton

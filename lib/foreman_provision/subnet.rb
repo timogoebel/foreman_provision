@@ -5,7 +5,7 @@ require 'foreman_provision/location'
 require 'foreman_provision/organization'
 require 'foreman_provision/smart_proxy'
 
-module Foreman_Provision
+module ForemanProvision
   class Subnet < BaseResource
 
     # @param [Hash] params

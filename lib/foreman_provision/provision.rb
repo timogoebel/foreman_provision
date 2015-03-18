@@ -9,7 +9,7 @@ require 'foreman_provision/parameter'
 require 'foreman_provision/smart_proxy'
 require 'foreman_provision/subnet'
 
-module Foreman_Provision
+module ForemanProvision
   class Provision
 
     # @param [Object] credentials

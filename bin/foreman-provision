@@ -1,8 +1,9 @@
 #!/usr/bin/env ruby
 #
-# Foreman_Provision script
+# ForemanProvision script
 #
 # @author: Nils Domrose
+# @author: Arnold Bechtoldt
 #
 $LOAD_PATH.unshift File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'foreman_provision'
@@ -47,10 +48,10 @@ end
 
 
 begin
-  logger = Foreman_Provision::Configuration.instance.set_logger(options.fetch(:log_file, false), loglevel)
-  credentials = Foreman_Provision::Configuration.instance.load_credentials(options.fetch(:credentials, './conf/foreman.yaml'))
-  config = Foreman_Provision::Configuration.instance.load_config(options.fetch(:config_file, './conf/config.yaml'))
-  provisioner = Foreman_Provision::Provision.new(credentials, logger, test)
+  logger = ForemanProvision::Configuration.instance.set_logger(options.fetch(:log_file, false), loglevel)
+  credentials = ForemanProvision::Configuration.instance.load_credentials(options.fetch(:credentials, './conf/foreman.yaml'))
+  config = ForemanProvision::Configuration.instance.load_config(options.fetch(:config_file, './conf/config.yaml'))
+  provisioner = ForemanProvision::Provision.new(credentials, logger, test)
   provisioner.run(config)
 rescue => e
   msg = "Error while processing provisoning: \"#{e.inspect}\"!"

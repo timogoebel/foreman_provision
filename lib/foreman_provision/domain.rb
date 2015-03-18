@@ -3,7 +3,7 @@ require 'foreman_api'
 require 'foreman_provision/location'
 require 'foreman_provision/organization'
 
-module Foreman_Provision
+module ForemanProvision
   class Domain < BaseResource
 
     # @param [Hash] params

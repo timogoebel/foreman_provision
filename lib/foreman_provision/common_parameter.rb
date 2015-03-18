@@ -3,7 +3,7 @@ require 'foreman_api'
 
 require 'foreman_provision/base_resource'
 
-module Foreman_Provision
+module ForemanProvision
   class CommonParameter < BaseResource
 
     # @param [Hash] params
