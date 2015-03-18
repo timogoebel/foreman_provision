@@ -283,7 +283,7 @@ module ForemanProvision
             if key == :ensure
               params[key] = param.fetch(:ensure, item.fetch(:ensure, 'present'))
             else
-              params[key] = item.fetch(key, nil)
+              params[key] = param.fetch(key, nil)
             end
           end
 
