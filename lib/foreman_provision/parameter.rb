@@ -23,7 +23,7 @@ module Foreman_Provision
     def destroy(params)
       @_params = resolve_param_owner(params)
 
-      if !params.has_key?(:id)
+      if !params.key?(:id)
         @_params['id'] = get_by_name(params)
       else
         @_params['id'] = params[:id]
@@ -48,15 +48,15 @@ module Foreman_Provision
     # @return [Hash]
     def show(params)
       @_params = resolve_param_owner(params)
-      return nil if @_params.nil?
+      return nil if !@_params
 
-      if !params.has_key?(:id)
+      if !params.key?(:id)
         params[:id] = get_by_name(params)
       end
 
       @_params['id'] = params[:id]
 
-      return nil if @_params['id'].nil?
+      return nil if !@_params['id']
 
       super
     end
@@ -67,7 +67,7 @@ module Foreman_Provision
     def update(params)
       @_params = resolve_param_owner(params)
 
-      if !params.has_key?(:id)
+      if !params.key?(:id)
         params[:id] = get_by_name(params)
       end
 
@@ -75,7 +75,7 @@ module Foreman_Provision
       @_params['name'] = params[:name]
       @_params['value'] = params[:value]
 
-      if params.has_key?(:test) && params[:test]
+      if params.key?(:test) && params[:test]
         old_res = show(params)
 
         result = {}
@@ -88,7 +88,7 @@ module Foreman_Provision
         return result
       end
 
-      super #TODO
+      super
     end
 
 
@@ -97,7 +97,7 @@ module Foreman_Provision
     # @param [Hash] params
     # @return [Integer]
     def exists(params)
-      if !params.has_key?(:name) || !params[:name].is_a?(String)
+      if !params.key?(:name) || !params[:name].is_a?(String)
         raise(TypeError)
       end
 
@@ -107,14 +107,14 @@ module Foreman_Provision
     # @param [String] name
     # @return [Integer]
     def get_by_name(params)
-      if params.nil? || ! params.has_key?(:name) || params[:name].nil?
+      if !params || !params.key?(:name) || !params[:name]
         return nil
       elsif !params[:name].is_a?(String)
         raise(TypeError)
       end
 
       @_params = resolve_param_owner(params)
-      return nil if @_params.nil?
+      return nil if !@_params
 
       @_params[:search] = "name=\"#{params[:name]}\""
 
@@ -128,22 +128,23 @@ module Foreman_Provision
     # @param [Hash] params
     # @return [Hash]
     def resolve_param_owner(params)
-      if !params.has_key?(:domain_id) && params.has_key?('domain')
+      if !params.key?(:domain_id) && params.key?('domain')
         retval = @res_domain.get_by_name(params['domain'])
         retval.nil? ? nil : {'domain_id' => retval}
 
-      elsif !params.has_key?(:host_id) && params.has_key?('host')
+      elsif !params.key?(:host_id) && params.key?('host')
         retval = @res_host.get_by_name(params['host'])
         retval.nil? ? nil : {'host_id' => retval}
 
-      elsif !params.has_key?(:hostgroup_id) && params.has_key?('hostgroup')
+      elsif !params.key?(:hostgroup_id) && params.key?('hostgroup')
         retval = @res_hg.get_by_name(params['hostgroup'])
-        retval.nil? ? nil :  {'hostgroup_id' => retval}
+        retval.nil? ? nil : {'hostgroup_id' => retval}
 
       else
         raise(KeyError)
       end
     end
+
 
     # Internal stuff
 

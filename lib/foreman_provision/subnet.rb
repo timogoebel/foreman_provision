@@ -12,21 +12,21 @@ module Foreman_Provision
     # @return [Hash]
     def create(params)
       dhcp_id = @res_sp.get_by_name(params[:dhcp_proxy]) || nil
-      dns_id =  @res_sp.get_by_name(params[:dns_proxy]) || nil
+      dns_id = @res_sp.get_by_name(params[:dns_proxy]) || nil
       dns_primary = params[:dns_primary] || nil
       dns_secondary = params[:dns_secondary] || nil
       domain_ids = []
-      from =  params[:from] || nil
-      gateway =  params[:gateway] || nil
+      from = params[:from] || nil
+      gateway = params[:gateway] || nil
       location_ids = []
       organization_ids = []
-      tftp_id =  @res_sp.get_by_name(params[:tftp_proxy]) || nil
-      to =  params[:to] || nil
-      vlanid =  params[:vlanid] || nil
+      tftp_id = @res_sp.get_by_name(params[:tftp_proxy]) || nil
+      to = params[:to] || nil
+      vlanid = params[:vlanid] || nil
 
-      params[:domain_names].each {|i| domain_ids.push(@res_domain.get_by_name(i))}
-      params[:locations].each {|i| location_ids.push(@res_loc.get_by_name(i))}
-      params[:organizations].each {|i| organization_ids.push(@res_org.get_by_name(i))}
+      params.fetch(:domain_names, []).each {|i| domain_ids.push(@res_domain.get_by_name(i))}
+      params.fetch(:locations, []).each {|i| location_ids.push(@res_loc.get_by_name(i))}
+      params.fetch(:organizations, []).each {|i| organization_ids.push(@res_org.get_by_name(i))}
 
       @_params = {
           'subnet' => {
@@ -90,7 +90,7 @@ module Foreman_Provision
     def update(params)
       @_params = {
           'id' => params[:id],
-          'common_parameter' => params[:params]
+          'common_parameter' => params[:params],
       }
 
       super

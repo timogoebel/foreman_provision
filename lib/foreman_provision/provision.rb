@@ -26,9 +26,9 @@ module Foreman_Provision
     def manage_resource(resource, params)
       exists = resource.exists(params)
 
-      if ['present', 'updated'].include?(params[:state])
+      if ['present', 'updated'].include?(params[:ensure])
         if exists
-          if params[:state] == 'updated'
+          if params[:ensure] == 'updated'
             params[:test] = true
             result = resource.update(params)
 
@@ -85,9 +85,19 @@ module Foreman_Provision
       #
       config.fetch(:common_params, []).each do |item|
         params = {}
-        params[:name] = item.fetch(:name)
-        params[:state] = item.fetch(:ensure, 'present')
-        params[:value] = item.fetch(:value)
+        keys = [
+          :name,
+          :ensure,
+          :value,
+        ]
+
+        keys.each do |key|
+          if key == :ensure
+            params[key] = item.fetch(key, 'present')
+          else
+            params[key] = item.fetch(key, nil)
+          end
+        end
 
         manage_resource(res_cparam, params)
       end
@@ -98,22 +108,32 @@ module Foreman_Provision
       #
       config.fetch(:subnets, []).each do |item|
         params = {}
-        params[:dhcp_proxy] = item.fetch(:dhcp_proxy)
-        params[:dns_primary] = item.fetch(:dns_primary)
-        params[:dns_proxy] = item.fetch(:dns_proxy)
-        params[:dns_secondary] = item.fetch(:dns_secondary)
-        params[:domain_names] = item.fetch(:domain_names, [])
-        params[:from] = item.fetch(:from)
-        params[:gateway] = item.fetch(:gateway)
-        params[:locations] = item.fetch(:locations, [])
-        params[:mask] = item.fetch(:mask)
-        params[:name] = item.fetch(:name)
-        params[:network] = item.fetch(:network)
-        params[:organizations] = item.fetch(:organizations, [])
-        params[:state] = item.fetch(:ensure, 'present')
-        params[:tftp_proxy] = item.fetch(:tftp_proxy)
-        params[:to] = item.fetch(:to)
-        params[:vlanid] = item.fetch(:vlanid, '')
+        keys = [
+          :dhcp_proxy,
+          :dns_primary,
+          :dns_proxy,
+          :dns_secondary,
+          :domain_names,
+          :from,
+          :gateway,
+          :locations,
+          :mask,
+          :name,
+          :network,
+          :organizations,
+          :ensure,
+          :tftp_proxy,
+          :to,
+          :vlanid,
+        ]
+
+        keys.each do |key|
+          if key == :ensure
+            params[key] = item.fetch(key, 'present')
+          else
+            params[key] = item.fetch(key, nil)
+          end
+        end
 
         manage_resource(res_subnet, params)
       end
@@ -124,11 +144,21 @@ module Foreman_Provision
       #
       config.fetch(:domains, []).each do |item|
         params = {}
-        params[:dns_proxy] = item.fetch(:dns_proxy)
-        params[:locations] = item.fetch(:locations, [])
-        params[:name] = item.fetch(:name)
-        params[:organizations] = item.fetch(:organizations, [])
-        params[:state] = item.fetch(:ensure, 'present')
+        keys = [
+          :dns_proxy,
+          :locations,
+          :name,
+          :organizations,
+          :ensure,
+        ]
+
+        keys.each do |key|
+          if key == :ensure
+            params[key] = item.fetch(key, 'present')
+          else
+            params[key] = item.fetch(key, nil)
+          end
+        end
 
         manage_resource(res_domain, params)
       end
@@ -139,11 +169,21 @@ module Foreman_Provision
       #
       config.fetch(:proxies, []).each do |item|
         params = {}
-        params[:locations] = item.fetch(:locations, [])
-        params[:name] = item.fetch(:name)
-        params[:organizations] = item.fetch(:organizations, [])
-        params[:state] = item.fetch(:ensure, 'present')
-        params[:url] = item.fetch(:url)
+        keys = [
+          :locations,
+          :name,
+          :organizations,
+          :ensure,
+          :url,
+        ]
+
+        keys.each do |key|
+          if key == :ensure
+            params[key] = item.fetch(key, 'present')
+          else
+            params[key] = item.fetch(key, nil)
+          end
+        end
 
         manage_resource(res_sp, params)
       end
@@ -154,20 +194,30 @@ module Foreman_Provision
       #
       config.fetch(:hostgroups, []).each do |item|
         params = {}
-        params[:architecture] = item.fetch(:architecture, nil)
-        params[:domain] = item.fetch(:domain, nil)
-        params[:environment] = item.fetch(:environment, nil)
-        params[:locations] = item.fetch(:locations, [])
-        params[:medium] = item.fetch(:medium, nil)
-        params[:name] = item.fetch(:name)
-        params[:operatingsystem] = item.fetch(:operatingsystem, nil)
-        params[:organizations] = item.fetch(:organizations, [])
-        params[:parent] = item.fetch(:parent, nil)
-        params[:ptable] = item.fetch(:ptable, nil)
-        params[:puppet_ca_proxy] = item.fetch(:puppet_ca_proxy, nil)
-        params[:puppet_proxy] = item.fetch(:puppet_proxy, nil)
-        params[:state] = item.fetch(:ensure, 'present')
-        params[:subnet] = item.fetch(:subnet, nil)
+        keys = [
+          :architecture,
+          :domain,
+          :environment,
+          :locations,
+          :medium,
+          :name,
+          :operatingsystem,
+          :organizations,
+          :parent,
+          :ptable,
+          :puppet_ca_proxy,
+          :puppet_proxy,
+          :ensure,
+          :subnet,
+        ]
+
+        keys.each do |key|
+          if key == :ensure
+            params[key] = item.fetch(key, 'present')
+          else
+            params[key] = item.fetch(key, nil)
+          end
+        end
 
         manage_resource(res_hg, params)
       end
@@ -178,28 +228,40 @@ module Foreman_Provision
       #
       config.fetch(:hosts, []).each do |item|
         params = {}
-        params[:architecture] = item.fetch(:architecture, nil)
-        params[:build] = item.fetch(:build, true)
-        params[:compute_attributes] = item.fetch(:compute_attributes, nil)
-        params[:compute_resource] = item.fetch(:compute_resource, nil)
-        params[:domain] = item.fetch(:domain, nil)
-        params[:environment] = item.fetch(:environment, nil)
-        params[:hostgroup] = item.fetch(:hostgroup, nil)
-        params[:ip] = item.fetch(:ip, nil)
-        params[:location] = item.fetch(:location, nil)
-        params[:mac] = item.fetch(:mac, nil)
-        params[:medium] = item.fetch(:medium, nil)
-        params[:name] = item.fetch(:name)
-        params[:operatingsystem] = item.fetch(:operatingsystem, nil)
-        params[:organization] = item.fetch(:organization, nil)
-        params[:parent] = item.fetch(:parent_id, nil)
-        params[:provision_method] = item.fetch(:provision_method, nil)
-        params[:ptable] = item.fetch(:ptable, nil)
-        params[:puppet_ca_proxy] = item.fetch(:puppet_ca_proxy, nil)
-        params[:puppetclasses] = item.fetch(:puppetclasses, nil)
-        params[:puppet_proxy] = item.fetch(:puppet_proxy, nil)
-        params[:state] = item.fetch(:ensure, 'present')
-        params[:subnet] = item.fetch(:subnet, nil)
+        keys = [
+          :architecture,
+          :build,
+          :compute_attributes,
+          :compute_resource,
+          :domain,
+          :environment,
+          :hostgroup,
+          :ip,
+          :location,
+          :mac,
+          :medium,
+          :name,
+          :operatingsystem,
+          :organization,
+          :parent,
+          :provision_method,
+          :ptable,
+          :puppet_ca_proxy,
+          :puppetclasses,
+          :puppet_proxy,
+          :ensure,
+          :subnet,
+        ]
+
+        keys.each do |key|
+          if key == :ensure
+            params[key] = item.fetch(key, 'present')
+          elsif key == :build
+            params[key] = item.fetch(key, true)
+          else
+            params[key] = item.fetch(key, nil)
+          end
+        end
 
         manage_resource(res_host, params)
       end
@@ -211,9 +273,19 @@ module Foreman_Provision
       config.fetch(:params, []).each do |item|
         item.fetch(:params, []).each do |param|
           params = {item.fetch(:type) => item.fetch(:name)}
-          params[:state] = param.fetch(:ensure, item.fetch(:ensure, 'present'))
-          params[:name] = param.fetch(:name)
-          params[:value] = param.fetch(:value)
+          keys = [
+            :ensure,
+            :name,
+            :value,
+          ]
+
+          keys.each do |key|
+            if key == :ensure
+              params[key] = param.fetch(:ensure, item.fetch(:ensure, 'present'))
+            else
+              params[key] = item.fetch(key, nil)
+            end
+          end
 
           manage_resource(res_param, params)
         end

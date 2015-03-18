@@ -69,7 +69,7 @@ module Foreman_Provision
     # @param [Hash] params
     # @return [Integer]
     def exists(params)
-      if !params.has_key?(:name) || !params[:name].is_a?(String)
+      if !params.key?(:name) || !params[:name].is_a?(String)
         raise(TypeError)
       end
 
@@ -85,7 +85,7 @@ module Foreman_Provision
     # @param [String] name
     # @return [Integer]
     def get_by_name(name)
-      if name.nil?
+      if !name
         return nil
       elsif !name.is_a?(String)
         raise(TypeError)

@@ -12,8 +12,8 @@ module Foreman_Provision
       location_ids = []
       organization_ids = []
 
-      params[:locations].each { |i| location_ids.push(@res_loc.get_by_name(i)) }
-      params[:organizations].each { |i| organization_ids.push(@res_org.get_by_name(i)) }
+      params.fetch(:locations, []).each { |i| location_ids.push(@res_loc.get_by_name(i)) }
+      params.fetch(:organizations, []).each { |i| organization_ids.push(@res_org.get_by_name(i)) }
 
       @_params = {
           'domain' => {

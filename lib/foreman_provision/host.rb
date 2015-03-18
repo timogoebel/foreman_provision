@@ -22,63 +22,63 @@ module Foreman_Provision
       host = {}
 
       architecture_id = @res_arch.get_by_name(params[:architecture]) || nil
-      host['architecture_id'] = architecture_id if !architecture_id.nil?
+      host['architecture_id'] = architecture_id if architecture_id
 
       host['build'] = params[:build]
 
       compute_attributes = params[:compute_attributes] || nil
-      host['compute_attributes'] = compute_attributes if !compute_attributes.nil?
+      host['compute_attributes'] = compute_attributes if compute_attributes
 
       compute_resource_id = @res_compres.get_by_name(params[:compute_resource]) || nil
-      host['compute_resource_id'] = compute_resource_id if !compute_resource_id.nil?
+      host['compute_resource_id'] = compute_resource_id if compute_resource_id
 
       domain_id = @res_domain.get_by_name(params[:domain]) || nil
-      host['domain_id'] = domain_id if !domain_id.nil?
+      host['domain_id'] = domain_id if domain_id
 
       environment_id = @res_env.get_by_name(params[:environment]) || nil
-      host['environment_id'] = environment_id if !environment_id.nil?
+      host['environment_id'] = environment_id if environment_id
 
       hostgroup_id = @res_hg.get_by_name(params[:hostgroup]) || nil
-      host['hostgroup_id'] = hostgroup_id if !hostgroup_id.nil?
+      host['hostgroup_id'] = hostgroup_id if hostgroup_id
 
       ip = params[:ip] || nil
-      host['ip'] = ip if !ip.nil?
+      host['ip'] = ip if ip
 
       location_id = @res_loc.get_by_name(params[:location]) || nil
-      host['location_id'] = location_id if !location_id.nil?
+      host['location_id'] = location_id if location_id
 
       mac = params[:mac] || nil
-      host['mac'] = mac if !mac.nil?
+      host['mac'] = mac if mac
 
       medium_id = @res_med.get_by_name(params[:medium]) || nil
-      host['medium_id'] = medium_id if !medium_id.nil?
+      host['medium_id'] = medium_id if medium_id
 
       host['name'] = params[:name]
 
       operatingsystem_id = @res_os.get_by_name(params[:operatingsystem]) || nil
-      host['operatingsystem_id'] = operatingsystem_id if !operatingsystem_id.nil?
+      host['operatingsystem_id'] = operatingsystem_id if operatingsystem_id
 
       organization_id = @res_org.get_by_name(params[:organization]) || nil
-      host['organization_id'] = organization_id if !organization_id.nil?
+      host['organization_id'] = organization_id if organization_id
 
       provision_method = params[:provision_method] || nil
-      host['provision_method'] = provision_method if !provision_method.nil?
+      host['provision_method'] = provision_method if provision_method
 
       ptable_id = @res_ptable.get_by_name(params[:ptable]) || nil
-      host['ptable_id'] = ptable_id if !ptable_id.nil?
+      host['ptable_id'] = ptable_id if ptable_id
 
       puppet_ca_proxy_id = @res_sp.get_by_name(params[:puppet_ca_proxy]) || nil
-      host['puppet_ca_proxy_id'] = puppet_ca_proxy_id if !puppet_ca_proxy_id.nil?
+      host['puppet_ca_proxy_id'] = puppet_ca_proxy_id if puppet_ca_proxy_id
 
       puppetclass_ids = []
       params[:puppetclasses].each {|i| puppetclass_ids.push(@res_pc.get_by_name(i))}
-      host['puppetclass_ids'] = puppetclass_ids if !puppetclass_ids.nil?
+      host['puppetclass_ids'] = puppetclass_ids if puppetclass_ids
 
       puppet_proxy_id = @res_sp.get_by_name(params[:puppet_proxy]) || nil
-      host['puppet_proxy_id'] = puppet_proxy_id if !puppet_proxy_id.nil?
+      host['puppet_proxy_id'] = puppet_proxy_id if puppet_proxy_id
 
       subnet_id = @res_subnet.get_by_name(params[:subnet]) || nil
-      host['subnet_id'] = subnet_id if !subnet_id.nil?
+      host['subnet_id'] = subnet_id if subnet_id
 
       @_params = {
           'host' => host,
@@ -138,7 +138,7 @@ module Foreman_Provision
     # @param [Hash] params
     # @return [Integer]
     def exists(params)
-      if !params.has_key?(:name) || !params[:name].is_a?(String)
+      if !params.key?(:name) || !params[:name].is_a?(String)
         raise(TypeError)
       end
 

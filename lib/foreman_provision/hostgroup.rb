@@ -92,7 +92,6 @@ module Foreman_Provision
     def update(params)
       @_params = {
           'id' => params[:id],
-          'common_parameter' => params[:params] #TODO common_parameter?
       }
 
       super
