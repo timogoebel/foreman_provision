@@ -35,12 +35,26 @@ You can use this Gem either from your own code:
 
 Or by using the foreman-provision script:
 
-    Usage: foreman-provision -c conf/config.yaml -a conf/foreman.yaml -v -d
-        -c, --config_file FILE           location of the configuration file
-        -a, --auth_credentials FILE      location of the foreman auth credentials YAML file
-        -v, --[no-]verbose               Run verbosely
-        -l, --log_file FILE              location of the log file
-        -d, --[no-]debug                 Run in debug mode
+    $ ./bin/foreman-provision -v -a conf/config.yaml -c examples/
+    I, [2015-03-14T01:43:40.252855 #24829]  INFO -- : Skipping - Foreman_Provision::Hostgroup "DE-TESTGROUP" already exists!
+    I, [2015-03-14T01:43:40.445141 #24829]  INFO -- : Skipping - Foreman_Provision::Hostgroup "DE-TESTGROUP-SBX" already exists!
+    I, [2015-03-14T01:43:40.634460 #24829]  INFO -- : Skipping - Foreman_Provision::Host "tst-fprovisioner-01" already exists!
+    I, [2015-03-14T01:43:41.829353 #24829]  INFO -- : Skipping - Foreman_Provision::Parameter "sample_param1" already up to date!
+    I, [2015-03-14T01:43:43.504911 #24829]  INFO -- : Skipping - Foreman_Provision::Parameter "configure.LIVE_HOST" already up to date!
+    I, [2015-03-14T01:43:44.801499 #24829]  INFO -- : Skipping - Foreman_Provision::Parameter "configure.DB_URL" already up to date!
+
+You can add ``-t`` to run in test mode, if desired:
+
+    $ ./bin/foreman-provision -v -a conf/config.yaml -c examples/ -t
+    I, [2015-03-18T14:28:14.819170 #34248]  INFO -- : Running provision in test mode
+    I, [2015-03-18T14:28:14.909404 #34248]  INFO -- : Skipping - Foreman_Provision::CommonParameter "sample_global_param_foo" already exists!
+    I, [2015-03-18T14:28:14.976404 #34248]  INFO -- : Would have created Foreman_Provision::Subnet {:dhcp_proxy=>"foreman.local.venv.de", :dns_primary=>"10.1.1.10", :dns_proxy=>"foreman.local.venv.de", :dns_secondary=>"10.1.1.11", :domain_names=>["local.venv.de"], :from=>"10.1.1.100", :gateway=>"10.1.1.1", :locations=>["local"], :mask=>"255.255.255.0", :name=>"test", :network=>"10.1.1.0", :organizations=>[], :ensure=>"present", :tftp_proxy=>"foreman.local.venv.de", :to=>"10.1.1.150", :vlanid=>""}
+    I, [2015-03-18T14:28:15.073105 #34248]  INFO -- : Would have created Foreman_Provision::Domain {:dns_proxy=>"foreman.local.venv.de", :locations=>["local"], :name=>"local2.venv.de", :organizations=>[], :ensure=>"present"}
+    I, [2015-03-18T14:28:15.141529 #34248]  INFO -- : Would have created Foreman_Provision::SmartProxy {:locations=>["local"], :name=>"foo2.local", :organizations=>[], :ensure=>"present", :url=>"https://foo2.local.venv.de:8443"}
+    I, [2015-03-18T14:28:15.213934 #34248]  INFO -- : Would have created Foreman_Provision::Hostgroup {:architecture=>"x86_64", :domain=>"local.venv.de", :environment=>"production", :locations=>["local"], :medium=>nil, :name=>"myhosts", :operatingsystem=>"ubuntu 12.04", :organizations=>[], :parent=>nil, :ptable=>"Preseed default", :puppet_ca_proxy=>"foreman.local.venv.de", :puppet_proxy=>"foreman.local.venv.de", :ensure=>"present", :subnet=>"local kvm subnet"}
+    I, [2015-03-18T14:28:15.286239 #34248]  INFO -- : Would have created Foreman_Provision::Host {:architecture=>"x86_64", :build=>1, :compute_attributes=>{:cpus=>1, :start=>"1", :cluster=>"ESX", :path=>"/Datencenter/TEST/prod", :memory_mb=>768, :interfaces_attributes=>{0=>{:network=>"dvportgroup-100404"}}, :volumes_attributes=>{0=>{:datastore=>"MY_SAN", :name=>"Hard disk", :size_gb=>5, :thin=>true}}}, :compute_resource=>"vsphere_local", :domain=>"local.venv.de", :environment=>"production", :hostgroup=>"vsphere", :ip=>nil, :location=>"LAN", :mac=>nil, :medium=>nil, :name=>"test11.local.venv.de", :operatingsystem=>"RedHat 6.5", :organization=>nil, :parent=>nil, :provision_method=>nil, :ptable=>"RedHat LVM", :puppet_ca_proxy=>nil, :puppetclasses=>["stdlib"], :puppet_proxy=>nil, :ensure=>"present", :subnet=>"local network"}
+    I, [2015-03-18T14:28:15.357802 #34248]  INFO -- : Would have created Foreman_Provision::Parameter {"hostgroup"=>"Testsystems", :ensure=>"present", :name=>"sample_param1", :value=>"some_value1"}
+    I, [2015-03-18T14:28:15.423885 #34248]  INFO -- : Would have created Foreman_Provision::Parameter {"hostgroup"=>"Testsystems", :ensure=>"present", :name=>"sample_param2", :value=>"some_value1"}
 
 ### Sample foreman credential data:
 
@@ -58,126 +72,7 @@ Adapt the config to your needs!
 
 ### Sample host config data:
 
-    cat conf/config.yaml.sample
-    ---
-    # kvm libvirt host
-    :hosts:
-      - :name: test10.local.venv.de
-        :hostgroup: 'generic kvm hosts'
-        :compute_resource: 'kvm_local'
-        :architecture: 'x86_64'
-        :operatingsystem: 'ubuntu 12.04'
-        :environment: 'production'
-        :build: 1
-        :compute_attributes:
-          :cpus: 1
-          :start: "1"
-          :power_action: start
-          :memory: 805306368
-          :nics_attributes:
-            0:
-              :type: :bridge
-              :bridge: virbr0
-              :model: virtio
-          :volumes_attributes:
-            0:
-              :pool_name: virtimages
-              :capacity: 5G
-              :allocation: 0G
-              :format_type: raw
-        :puppetclasses:
-          - stdlib
-        :location: local
-
-    # vmware vsphere
-      - :name: test11.local.venv.de
-        :hostgroup: 'vsphere'
-        :compute_resource: 'vsphere_local'
-        :architecture: 'x86_64'
-        :ptable: 'RedHat LVM'
-        :domain: local.venv.de
-        :subnet: 'local network'
-        :operatingsystem: 'RedHat 6.5'
-        :environment: 'production'
-        :build: 1
-        :compute_attributes:
-          :cpus: 1
-          :start: "1"
-          :cluster: 'ESX'
-          :path: '/Datencenter/TEST/prod' # from compute_resource edit screen view source
-          :memory_mb: 768
-          :interfaces_attributes:
-            0:
-              :network: 'dvportgroup-100404' # from compute_resource edit screen view source
-          :volumes_attributes:
-            0:
-              :datastore: MY_SAN
-              :name: 'Hard disk'
-              :size_gb: 5
-              :thin: true
-        :puppetclasses:
-          - stdlib
-        :location: LAN
-    :subnets:
-      - :name: test
-        :network: 10.1.1.0
-        :mask: 255.255.255.0
-        :gateway: 10.1.1.1
-        :from: 10.1.1.100
-        :to: 10.1.1.150
-        :dns_primary: 10.1.1.10
-        :dns_secondary: 10.1.1.11
-        :dhcp_proxy: foreman.local.venv.de
-        :tftp_proxy: foreman.local.venv.de
-        :dns_proxy: foreman.local.venv.de
-        :vlanid: ''
-        :domain_names:
-          - local.venv.de
-        :locations:
-          - local
-    :domains:
-      - :name: local2.venv.de
-        :dns_proxy: foreman.local.venv.de
-        :fullname: 'My second local network'
-        :locations:
-          - local
-    :proxies:
-      - :name: foo2.local
-        :url: https://foo2.local.venv.de:8443
-        :locations:
-          - local
-    :params:
-      - :hostgroup: Testsystems
-        :parameter:
-        :name: sample_param
-        :value: some_value
-      - :host: testhost.local.venv.de
-        :parameter:
-        :name: sample_param
-        :value: some_value
-      - :domain: foreman.local.venv.de
-        :parameter:
-        :name: sample_param
-        :value: some_value
-    :hostgroups:
-      - :name: myhosts
-        :architecture: 'x86_64'
-        :operatingsystem: 'ubuntu 12.04'
-        :ptable: 'Preseed default'
-        :environment: 'production'
-        :puppetclasses:
-          - stdlib
-        :subnet: 'local kvm subnet'
-        :domain: 'local.venv.de'
-        :puppet_proxy: foreman.local.venv.de
-        :puppet_ca_proxy: foreman.local.venv.de
-        :locations:
-          - local
-    :cparams:
-      - :name: sample_global_param
-        :value: sample value
-
-Adapt the config to your needs!
+See ``examples/`` directory to see example YAML files.
 
 
 ## Contributing

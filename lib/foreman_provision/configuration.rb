@@ -5,11 +5,6 @@ require 'singleton'
 
 module Foreman_Provision
   # Singleton Class to manage foreman-provision configuration data
-  #
-  # @author: Nils Domrose
-  #
-  # * *Example* :
-  #  config = Foreman_Provision::Configuration.instance
   class Configuration
     include Singleton
 
@@ -17,18 +12,10 @@ module Foreman_Provision
     attr_accessor :logger
 
     # Method to initalize logging
-    #
-    # * *Example* :
-    #  set_logger('/tmp/provision.log, Logger::INFO')
-    # * *Args*    :
-    #   - +file+ -> logfile
-    #   - +level+ -> Log Level (integer) Constant i.e. Logger::INFO
-    # * *Returns* :
-    #   - +Logger+ instance
-    # * *Raises* :
-    #   - +Errno+ -> if logfile can't be created
-    #
-    def set_logger (file, level)
+    # @param [String] file
+    # @param [Integer] level
+    # @return [Logger]
+    def set_logger(file, level)
       file ? (@logger = Logger.new(file)) : @logger = Logger.new(STDOUT)
       @logger.level = level
       @logger
@@ -36,20 +23,16 @@ module Foreman_Provision
 
 
     # Method to load credentials form a YAML file
-    #
-    # * *Example* :
-    #  load_credentials('./conf/forman.yaml')
-    # * *Args*    :
-    #   - +file+ -> YAML file containing the foreman credentials
-    # * *Returns* :
-    #   - +Hash+ containing the foreman credentials
-    # * *Raises* :
-    #   - +TypeError+ -> if credentials can't be parsed as hash
-    #   - +RuntimeError+ -> if file doesn't exist
-    #
+    # @param [String] file
+    # @return [Hash]
     def load_credentials(file)
-      File.file?(file) ? ( credentials = YAML.load_file(file)) : (raise "Unable to load file \"#{file}\" in #{__method__}")
-      raise TypeError unless credentials.is_a? Hash
+      if File.file?(file)
+        credentials = YAML.load_file(file)
+      else
+        raise("Unable to load file \"#{file}\" in #{__method__}")
+      end
+
+      raise(TypeError) unless credentials.is_a?(Hash)
 
       @logger.debug("loaded credentials from file \"#{file}\": \"#{credentials}\" in #{__method__} ")
 
@@ -57,21 +40,36 @@ module Foreman_Provision
     end
 
 
+    # @param [String] dir
+    def yaml_read_dir(dir)
+      Dir.glob("#{dir}/*.yaml").each_with_object({}) do |f, data|
+        if File.file?(f)
+          data[f] = YAML.load_file(f)
+        elsif File.directory?(f)
+          data[f] = yaml_read_dir(f)
+        end
+      end
+    end
+
+
     # Method to load configuration form a YAML file
-    #
-    # * *Example* :
-    #  load_config('./conf/config.yaml')
-    # * *Args*    :
-    #   - +file+ -> YAML file containing the provisioning config data
-    # * *Returns* :
-    #   - Hash containing the provisioning config data
-    # * *Raises* :
-    #   - +TypeError+ -> if config can't be parsed as hash
-    #   - +RuntimeError+ -> if file doesn't exist
-    #
-    def load_config file
-      File.file?(file) ? (config = YAML.load_file(file)) : (raise "Unable to load File \"#{file}\" in #{__method__}")
-      raise TypeError unless config.is_a? Hash
+    # @param [String] file
+    # @return [Hash]
+    def load_config(file)
+      config = {}
+
+      if File.file?(file)
+        config = YAML.load_file(file)
+      elsif File.directory?(file)
+        config_map = yaml_read_dir(file)
+        config_map.each do |k, v|
+          config.merge!(v)
+        end
+      else
+        raise("Unable to load file \"#{file}\" in #{__method__}")
+      end
+
+      raise(TypeError) unless config.is_a?(Hash)
 
       @logger.debug("Foreman_config: #{config}")
 

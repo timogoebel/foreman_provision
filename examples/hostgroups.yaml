@@ -1,0 +1,15 @@
+---
+:hostgroups:
+  - :name: myhosts
+    :architecture: 'x86_64'
+    :operatingsystem: 'ubuntu 12.04'
+    :ptable: 'Preseed default'
+    :environment: 'production'
+    :puppetclasses:
+      - stdlib
+    :subnet: 'local kvm subnet'
+    :domain: 'local.venv.de'
+    :puppet_proxy: foreman.local.venv.de
+    :puppet_ca_proxy: foreman.local.venv.de
+    :locations:
+      - local
