@@ -9,7 +9,7 @@ require 'foreman_provision/parameter'
 require 'foreman_provision/smart_proxy'
 require 'foreman_provision/subnet'
 
-module Foreman_Provision
+module ForemanProvision
   class Provision
 
     # @param [Object] credentials
@@ -283,7 +283,7 @@ module Foreman_Provision
             if key == :ensure
               params[key] = param.fetch(:ensure, item.fetch(:ensure, 'present'))
             else
-              params[key] = item.fetch(key, nil)
+              params[key] = param.fetch(key, nil)
             end
           end
 

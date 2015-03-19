@@ -4,7 +4,7 @@ require 'foreman_provision/domain'
 require 'foreman_provision/host'
 require 'foreman_provision/hostgroup'
 
-module Foreman_Provision
+module ForemanProvision
   class Parameter < BaseResource
 
     # @param [Hash] params

@@ -1,7 +1,7 @@
 # encoding: UTF-8
 require 'foreman_api'
 
-module Foreman_Provision
+module ForemanProvision
   class Architecture < BaseResource
 
     # @param [Hash] params

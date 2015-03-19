@@ -10,7 +10,7 @@ require 'foreman_provision/organization'
 require 'foreman_provision/ptable'
 require 'foreman_provision/smart_proxy'
 
-module Foreman_Provision
+module ForemanProvision
   class Hostgroup < BaseResource
 
     # @param [Hash] params

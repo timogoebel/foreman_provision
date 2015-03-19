@@ -13,7 +13,7 @@ require 'foreman_provision/ptable'
 require 'foreman_provision/puppetclass'
 require 'foreman_provision/smart_proxy'
 
-module Foreman_Provision
+module ForemanProvision
   class Host < BaseResource
 
     # @param [Hash] params
