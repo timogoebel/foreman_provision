@@ -57,15 +57,14 @@ module ForemanProvision
     # @param [String] name
     # @return [Integer]
     def get_by_name(name)
-      # get_by_name() for Puppetclass needs a specific implemantion since the result of the index() method is a hash
       if !name
         return nil
       elsif !name.is_a?(String)
         raise(TypeError)
       end
 
-      result = @resource.index({:search => "name=\"#{name}\""})[0]["results"].select{|k, v| k==name }
-      result[name][0]['id'] if result.any?
+      result = @resource.index({:search => "name=\"#{name}\""})[0]["results"].select{|k, v| v[0]["name"]==name }
+      result[result.keys.first][0]['id'] if result.any?
     end
 
 
