@@ -54,6 +54,20 @@ module ForemanProvision
     end
 
 
+    # @param [String] name
+    # @return [Integer]
+    def get_by_name(name)
+      if !name
+        return nil
+      elsif !name.is_a?(String)
+        raise(TypeError)
+      end
+
+      result = @resource.index({:search => "name=\"#{name}\""})[0]["results"].select{|k, v| v[0]["name"]==name }
+      result[result.keys.first][0]['id'] if result.any?
+    end
+
+
     # Internal stuff
 
     # @param [Object] credentials
