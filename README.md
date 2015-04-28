@@ -26,16 +26,16 @@ You can use this Gem either from your own code:
     require 'logger'
 
     logger = ForemanProvision::Configuration.instance.set_logger('/tmp/provision.log', Logger::DEBUG)
-    # see conf/foreman.yaml.sample for sample data
-    credentials = ForemanProvision::Configuration.instance.load_credentials('./conf/foreman.yaml')
-    # see conf/config.yaml for sample data
-    config = ForemanProvision::Configuration.instance.load_config('./conf/config.yaml')
+    # see conf/auth.yaml.sample for sample data
+    credentials = ForemanProvision::Configuration.instance.load_credentials('./conf/auth.yaml')
+    # see examples/ for sample data
+    config = ForemanProvision::Configuration.instance.load_config('./examples/')
     provisioner = ForemanProvision::Provision.new(credentials, logger)
     provisioner.run(config)
 
 Or by using the foreman-provision script:
 
-    $ ./bin/foreman-provision -v -a conf/config.yaml -c examples/
+    $ ./bin/foreman-provision -v -a conf/auth.yaml -c examples/
     I, [2015-03-14T01:43:40.252855 #24829]  INFO -- : Skipping - ForemanProvision::Hostgroup "DE-TESTGROUP" already exists!
     I, [2015-03-14T01:43:40.445141 #24829]  INFO -- : Skipping - ForemanProvision::Hostgroup "DE-TESTGROUP-SBX" already exists!
     I, [2015-03-14T01:43:40.634460 #24829]  INFO -- : Skipping - ForemanProvision::Host "tst-fprovisioner-01" already exists!
@@ -45,7 +45,7 @@ Or by using the foreman-provision script:
 
 You can add ``-t`` to run in test mode, if desired:
 
-    $ ./bin/foreman-provision -v -a conf/config.yaml -c examples/ -t
+    $ ./bin/foreman-provision -v -a conf/auth.yaml -c examples/ -t
     I, [2015-03-18T14:28:14.819170 #34248]  INFO -- : Running provision in test mode
     I, [2015-03-18T14:28:14.909404 #34248]  INFO -- : Skipping - ForemanProvision::CommonParameter "sample_global_param_foo" already exists!
     I, [2015-03-18T14:28:14.976404 #34248]  INFO -- : Would have created ForemanProvision::Subnet {:dhcp_proxy=>"foreman.local.venv.de", :dns_primary=>"10.1.1.10", :dns_proxy=>"foreman.local.venv.de", :dns_secondary=>"10.1.1.11", :domain_names=>["local.venv.de"], :from=>"10.1.1.100", :gateway=>"10.1.1.1", :locations=>["local"], :mask=>"255.255.255.0", :name=>"test", :network=>"10.1.1.0", :organizations=>[], :ensure=>"present", :tftp_proxy=>"foreman.local.venv.de", :to=>"10.1.1.150", :vlanid=>""}
@@ -58,11 +58,11 @@ You can add ``-t`` to run in test mode, if desired:
 
 ### Sample foreman credential data:
 
-    cat conf/foreman.yaml.sample
+    cat conf/auth.yaml.sample
     ---
     :base_url: https://127.0.0.1
     :oauth:
-      :consumer_key:  <your consumer key>
+      :consumer_key: <your consumer key>
       :consumer_secret: <your consumer secret>
     :headers:
       :foreman_user: <foreman user>
