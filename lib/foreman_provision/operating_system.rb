@@ -56,6 +56,19 @@ module ForemanProvision
 
     # Internal stuff
 
+    # @param [String] name
+    # @return [Integer]
+    def get_by_name(name)
+      if !name
+        return nil
+      elsif !name.is_a?(String)
+        raise(TypeError)
+      end
+
+      result = @resource.index({:search => "description=\"#{name}\""})[0]["results"].select{|entry| entry["description"]==name }
+      result[0]['id'] if result.any?
+    end
+
     # @param [Object] credentials
     # @param [Object] logger
     def initialize(credentials, logger)

@@ -28,9 +28,10 @@ module ForemanProvision
       puppet_ca_proxy_id = @res_sp.get_by_name(params[:puppet_ca_proxy]) || nil
       puppet_proxy_id = @res_sp.get_by_name(params[:puppet_proxy]) || nil
       subnet_id = @res_subnet.get_by_name(params[:subnet]) || nil
+      root_pass = params[:root_pass] || nil
 
-      params[:locations].each { |i| location_ids.push(@res_loc.get_by_name(i)) }
-      params[:organizations].each { |i| organization_ids.push(@res_org.get_by_name(i)) }
+      params.fetch(:locations, []).each { |i| location_ids.push(@res_loc.get_by_name(i)) }
+      params.fetch(:organizations, []).each { |i| organization_ids.push(@res_org.get_by_name(i)) }
 
       @_params = {
           'hostgroup' => {
@@ -47,6 +48,7 @@ module ForemanProvision
               'puppet_ca_proxy_id' => puppet_ca_proxy_id,
               'puppet_proxy_id' => puppet_proxy_id,
               'subnet_id' => subnet_id,
+              'root_pass' => root_pass,
           }
       }
 

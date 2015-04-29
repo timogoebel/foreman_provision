@@ -71,7 +71,7 @@ module ForemanProvision
       host['puppet_ca_proxy_id'] = puppet_ca_proxy_id if puppet_ca_proxy_id
 
       puppetclass_ids = []
-      params[:puppetclasses].each {|i| puppetclass_ids.push(@res_pc.get_by_name(i))}
+      params.fetch(:puppetclasses, []).each {|i| puppetclass_ids.push(@res_pc.get_by_name(i))}
       host['puppetclass_ids'] = puppetclass_ids if puppetclass_ids
 
       puppet_proxy_id = @res_sp.get_by_name(params[:puppet_proxy]) || nil
