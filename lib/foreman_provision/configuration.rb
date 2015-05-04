@@ -56,24 +56,36 @@ module ForemanProvision
     # @param [String] file
     # @return [Hash]
     def load_config(file)
-      config = {}
+      config_merged, config = {}
 
       if File.file?(file)
-        config = YAML.load_file(file)
+        config_merged = YAML.load_file(file)
       elsif File.directory?(file)
-        config_map = yaml_read_dir(file)
-        config_map.each do |k, v|
-          config.merge!(v)
+        config = yaml_read_dir(file)
+        config_merged = config.clone
+
+        config.each do |filepath, data|
+          if !data.instance_of?(Hash) && !data.instance_of?(Array)
+            next
+          end
+
+          data.each do |k, v_new|
+            if v_new.is_a?(Array)
+              config_merged[k] = config_merged.fetch(k, []).concat(v_new)
+            else
+              config_merged[k].merge!(v_new)
+            end
+          end
         end
       else
         raise("Unable to load file \"#{file}\" in #{__method__}")
       end
 
-      raise(TypeError) unless config.is_a?(Hash)
+      raise(TypeError) unless config_merged.is_a?(Hash)
 
-      @logger.debug("Foreman_config: #{config}")
+      @logger.debug("Foreman_config: #{config_merged}")
 
-      config
+      config_merged
     end
   end
 end
