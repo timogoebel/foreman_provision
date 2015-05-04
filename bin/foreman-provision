@@ -36,7 +36,7 @@ end.parse!
 
 if options.fetch(:debug, false)
   loglevel = Logger::DEBUG
-elsif options.fetch(:verbose, false)
+elsif options.fetch(:verbose, false) || options.fetch(:test, false)
   loglevel = Logger::INFO
 else
   loglevel = Logger::FATAL

@@ -283,7 +283,7 @@ module ForemanProvision
           keys.each do |key|
             if key == :ensure
               params[key] = param.fetch(:ensure, item.fetch(:ensure, 'present'))
-            elsif item.has_key?(key)
+            elsif param.has_key?(key)
               params[key] = param.fetch(key)
             end
           end
