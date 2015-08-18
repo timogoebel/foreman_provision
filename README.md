@@ -82,3 +82,7 @@ See ``examples/`` directory to see example YAML files.
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin feature/my-new-feature`)
 5. Create new Pull Request
+
+### External Documentation/ Articles
+
+* https://blog.inovex.de/foreman-provision-a-comfortable-resource-management-tool-for-foreman/
