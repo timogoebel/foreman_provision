@@ -80,6 +80,9 @@ module ForemanProvision
       subnet_id = @res_subnet.get_by_name(params[:subnet]) || nil
       host['subnet_id'] = subnet_id if subnet_id
 
+      interfaces_attributes = params[:interfaces_attributes] || nil
+      host['interfaces_attributes'] = interfaces_attributes if interfaces_attributes
+
       @_params = {
           'host' => host,
       }

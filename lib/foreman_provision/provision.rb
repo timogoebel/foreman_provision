@@ -233,6 +233,7 @@ module ForemanProvision
           :architecture,
           :build,
           :compute_attributes,
+          :interfaces_attributes,
           :compute_resource,
           :domain,
           :environment,
