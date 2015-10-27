@@ -147,10 +147,19 @@ module ForemanProvision
 
       name = params[:name]
       # work around for non period (non fqdn hostnames in foreman >1.4)
+      # get domain either by domain attribute or from the first interface in interfaces_attributes
       if !name.include? '.'
-        name = "#{params[:name]}.#{params[:domain]}"
+        if params.has_key?(:domain)
+          name = "#{params[:name]}.#{params[:domain]}"
+        elsif params.has_key?(:interfaces_attributes)
+          domain_id = params[:interfaces_attributes][0][:domain_id]
+          domain = @res_domain.get_by_id(domain_id)
+          name = "#{params[:name]}.#{domain}"
+        else
+          raise "Can not check if host exists, could not determine fqdn for host #{name}"
+        end
       end
-
+      @logger.debug "Checking if host exists: #{name}"
       get_by_name(name)
     end
 

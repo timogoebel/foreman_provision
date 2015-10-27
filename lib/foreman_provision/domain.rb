@@ -50,6 +50,7 @@ module ForemanProvision
     # @return [Hash]
     def show(params)
       @_params = {
+        'id' => params[:id],
       }
 
       super

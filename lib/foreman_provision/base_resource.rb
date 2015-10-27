@@ -95,6 +95,18 @@ module ForemanProvision
       result[0]['id'] if result.any?
     end
 
+    # @param [String] name
+    # @return [Integer]
+    def get_by_id(id)
+      if !id
+        return nil
+      elsif !id.is_a?(Integer)
+        raise(TypeError)
+      end
+
+      result = show({:id => id})
+      result['response'][0]['name'] if result.any?
+    end
 
     # Internal stuff
 
