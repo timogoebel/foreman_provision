@@ -10,7 +10,12 @@ module ForemanProvision
       @logger.debug("Performing \"#{__method__}\" for #{self.class.to_s} \"#{params[:name]}\" with params #{@_params}")
 
       result = {}
-      result['response'] = @resource.create(@_params)
+      begin
+        result['response'] = @resource.create(@_params)
+      rescue RestClient::ExceptionWithResponse => e
+        @logger.error "HTTP Error: #{e.response}"
+        exit 1
+      end
       result['success'] = true #TODO
       result
     end
